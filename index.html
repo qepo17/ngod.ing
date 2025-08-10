@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>ngod.ing</title>
   <meta name="description" content="ngod.ing — small, sharp tools.">
   <style>
@@ -33,14 +33,19 @@
             "Segoe UI Emoji";
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
-      overflow: hidden;           /* no scroll */
+      overflow: hidden; /* default: one-screen feel */
     }
 
     .wrap {
-      height: 100dvh;             /* lock to one screen */
+      height: 100dvh;              /* modern mobile fix */
+      min-height: 100svh;          /* fallback for tiny viewports */
       display: grid;
       place-items: center;
       padding: var(--space);
+      padding-left:  max(var(--space), env(safe-area-inset-left));
+      padding-right: max(var(--space), env(safe-area-inset-right));
+      padding-top:   max(var(--space), env(safe-area-inset-top));
+      padding-bottom:max(var(--space), env(safe-area-inset-bottom));
     }
 
     .card {
@@ -91,6 +96,7 @@
       background: var(--green);
       padding: 6px 10px;
       border-radius: 999px;
+      white-space: nowrap;
     }
 
     .actions {
@@ -112,10 +118,12 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       box-shadow: 0 6px 16px rgba(72,99,182,.22);
       transform: translateY(0);
       transition: transform .08s ease, box-shadow .12s ease, opacity .12s ease;
+      min-height: 44px; /* finger-friendly */
     }
     .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(72,99,182,.26); }
     .btn:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(72,99,182,.18); }
@@ -123,25 +131,51 @@
 
     .meta {
       position: fixed;
-      left: var(--space);
-      bottom: var(--space);
+      left:  max(var(--space), env(safe-area-inset-left));
+      bottom: max(var(--space), env(safe-area-inset-bottom));
       font-size: 12px;
       color: var(--muted);
       opacity: .8;
       user-select: none;
     }
 
+    /* Narrow phones: stack smarter */
     @media (max-width: 520px) {
       .card { grid-template-columns: auto 1fr; }
       .pill { grid-column: 2; justify-self: start; }
       .actions { grid-column: 1 / -1; }
+      .actions .btn { flex: 1 1 100%; } /* full-width button */
+    }
+
+    /* Extra-tight width: full vertical stack */
+    @media (max-width: 360px) {
+      .card { grid-template-columns: 1fr; gap: 12px; }
+      .logo { width: 40px; height: 40px; }
+      .pill { justify-self: start; }
+    }
+
+    /* Short viewports (e.g., landscape phones): allow scroll instead of clipping */
+    @media (max-height: 520px) {
+      html, body { overflow: auto; }
+      .wrap {
+        height: auto;
+        min-height: 100svh;
+        place-items: start center;
+      }
+      .meta { position: static; margin-top: 10px; }
+    }
+
+    /* Respect users who prefer less motion */
+    @media (prefers-reduced-motion: reduce) {
+      .btn { transition: none; }
+      .btn:hover, .btn:active { transform: none; box-shadow: 0 6px 16px rgba(72,99,182,.22); }
     }
   </style>
 </head>
 <body>
   <main class="wrap" role="main">
-    <article class="card" aria-label="QepoAI">
-      	<div class="logo" aria-hidden="true">
+    <article class="card" aria-labelledby="app-title">
+      <div class="logo" aria-hidden="true">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Q mark">
           <circle cx="12" cy="12" r="6.5" stroke="var(--blue)" stroke-width="2.25"/>
           <path d="M15.6 15.6 L19 19" stroke="var(--blue)" stroke-width="2.25" stroke-linecap="round"/>
@@ -150,14 +184,14 @@
       </div>
 
       <div>
-        <h1 class="title">QepoAI</h1>
+        <h1 class="title" id="app-title">QepoAI</h1>
         <p class="desc">Summarize links. Track RSS. Get digests when you want.</p>
       </div>
 
       <span class="pill">LIVE</span>
 
       <div class="actions">
-        <a class="btn" href="https://qepoai.ngod.ing" target="_blank" rel="noopener">
+        <a class="btn" href="https://qepoai.ngod.ing" target="_blank" rel="noopener noreferrer">
           Open QepoAI <span aria-hidden="true">↗</span>
         </a>
       </div>

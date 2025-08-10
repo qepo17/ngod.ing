@@ -36,18 +36,22 @@
       overflow: hidden; /* default: one-screen feel */
     }
 
-    .wrap {
-      height: 100dvh;              /* modern mobile fix */
-      min-height: 100svh;          /* fallback for tiny viewports */
-      display: grid;
-      place-items: center;
-      padding: var(--space);
-      padding-left:  max(var(--space), env(safe-area-inset-left));
-      padding-right: max(var(--space), env(safe-area-inset-right));
-      padding-top:   max(var(--space), env(safe-area-inset-top));
-      padding-bottom:max(var(--space), env(safe-area-inset-bottom));
-    }
+.wrap{
+  height: 100dvh;             
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space);
+  padding-left:  max(var(--space), env(safe-area-inset-left));
+  padding-right: max(var(--space), env(safe-area-inset-right));
+  padding-top:   max(var(--space), env(safe-area-inset-top));
+  padding-bottom:max(var(--space), env(safe-area-inset-bottom));
+}
 
+@media (max-height: 520px){
+  html, body { overflow: auto; }
+  .wrap{ height: auto; min-height: 100vh; align-items: flex-start; }
+}
     .card {
       width: min(720px, 96vw);
       background: var(--card);
@@ -139,31 +143,20 @@
       user-select: none;
     }
 
-    /* Narrow phones: stack smarter */
-    @media (max-width: 520px) {
-      .card { grid-template-columns: auto 1fr; }
-      .pill { grid-column: 2; justify-self: start; }
-      .actions { grid-column: 1 / -1; }
-      .actions .btn { flex: 1 1 100%; } /* full-width button */
-    }
+    /* 2) Mobile layout polish (no vertical nudges) */
+@media (max-width: 520px){
+  .card { grid-template-columns: auto 1fr; }
+  .pill { grid-column: 2; justify-self: start; }
+  .actions { grid-column: 1 / -1; }
+  .actions .btn { width: 100%; }     /* full-width button */
+  .meta { display: none; }           /* hide footer badge to avoid bottom-heavy feel */
+}
 
-    /* Extra-tight width: full vertical stack */
-    @media (max-width: 360px) {
-      .card { grid-template-columns: 1fr; gap: 12px; }
-      .logo { width: 40px; height: 40px; }
-      .pill { justify-self: start; }
-    }
-
-    /* Short viewports (e.g., landscape phones): allow scroll instead of clipping */
-    @media (max-height: 520px) {
-      html, body { overflow: auto; }
-      .wrap {
-        height: auto;
-        min-height: 100svh;
-        place-items: start center;
-      }
-      .meta { position: static; margin-top: 10px; }
-    }
+/* 3) Super narrow phones */
+@media (max-width: 360px){
+  .card { grid-template-columns: 1fr; gap: 12px; }
+  .logo { width: 40px; height: 40px; }
+}
 
     /* Respect users who prefer less motion */
     @media (prefers-reduced-motion: reduce) {
